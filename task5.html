@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="styles.css">
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+#location-form {
+    margin-bottom: 20px;
+}
+
+#location-form input {
+    padding: 10px;
+    width: 70%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+#location-form button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+#location-form button:hover {
+    background-color: #0056b3;
+}
+
+.weather {
+    margin-top: 20px;
+}
+
+.weather h2 {
+    margin-bottom: 10px;
+}
+
+.weather p {
+    margin: 5px 0;
+}
+
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather App</h1>
+        <form id="location-form">
+            <label for="location">Enter Location:</label>
+            <input type="text" id="location" name="location" placeholder="City or Zip Code">
+            <button type="submit">Get Weather</button>
+        </form>
+        <div id="weather" class="weather">
+            <!-- Weather data will be displayed here -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+<script>
+const apiKey = '7d553e987e132dd6a4487d262ab9b03a'; // Replace with your OpenWeatherMap API key
+
+document.getElementById('location-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const location = document.getElementById('location').value;
+    if (location) {
+        getWeatherByLocation(location);
+    } else {
+        alert('Please enter a location.');
+    }
+});
+
+function getWeatherByLocation(location) {
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`)
+        .then(response => {
+            console.log('Response Status:', response.status); // Log the status code
+            if (!response.ok) {
+                throw new Error('Location not found');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Weather Data:', data); // Log the data received
+            displayWeather(data);
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+}
+
+function displayWeather(data) {
+    const weatherContainer = document.getElementById('weather');
+    weatherContainer.innerHTML = `
+        <h2>${data.name}, ${data.sys.country}</h2>
+        <p>Temperature: ${data.main.temp} °C</p>
+        <p>Weather: ${data.weather[0].description}</p>
+        <p>Humidity: ${data.main.humidity} %</p>
+        <p>Wind Speed: ${data.wind.speed} m/s</p>
+    `;
+}
+</script>
